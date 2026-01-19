@@ -28,12 +28,12 @@ export function LoadingScreen() {
       />
 
       <div className="relative z-10 flex flex-col items-center gap-8">
-        {/* Logo - Much bigger */}
+        {/* Logo - Extra large on all devices */}
         <div className="relative">
           <img
             src="/images/logov1t.png"
             alt="F1 Intelligence Hub"
-            className="h-32 sm:h-40 md:h-48 lg:h-56 brightness-0 invert opacity-90 animate-pulse"
+            className="h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 brightness-0 invert opacity-90 animate-pulse"
           />
         </div>
 
