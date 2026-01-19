@@ -36,7 +36,7 @@ export default function F1IntelligenceHub() {
         loading={loading}
       />
       
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-160px)]">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-96px)]">
         {/* Main Content Area */}
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
           <div className="max-w-6xl mx-auto space-y-4 lg:space-y-6">
