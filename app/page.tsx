@@ -24,11 +24,11 @@ export default function F1IntelligenceHub() {
   
   const data = liveData || demoData;
 
-  // Minimum 7.77 seconds timer
+  // Minimum 7 seconds timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setMinTimeElapsed(true);
-    }, 7770);
+    }, 7000);
     return () => clearTimeout(timer);
   }, []);
 
