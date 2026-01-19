@@ -22,13 +22,13 @@ export default function F1IntelligenceHub() {
   
   const data = liveData || demoData;
 
-  // Hide loading screen after initial data fetch + 2 second buffer
+  // Hide loading screen after initial data fetch + 7.77 second buffer
   useEffect(() => {
     if (!loading || liveData || error) {
-      // 2 second buffer to show the nice loading screen
+      // 7.77 second buffer - lucky number! 🍀
       const timer = setTimeout(() => {
         setInitialLoad(false);
-      }, 2000);
+      }, 7770);
       return () => clearTimeout(timer);
     }
   }, [loading, liveData, error]);
