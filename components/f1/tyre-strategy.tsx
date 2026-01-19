@@ -1,0 +1,119 @@
+"use client";
+
+interface Stint {
+  compound: "soft" | "medium" | "hard";
+  startLap: number;
+  endLap: number;
+}
+
+interface DriverStrategy {
+  driver: string;
+  stints: Stint[];
+}
+
+const strategies: DriverStrategy[] = [
+  {
+    driver: "VER",
+    stints: [
+      { compound: "soft", startLap: 1, endLap: 18 },
+      { compound: "hard", startLap: 19, endLap: 45 },
+      { compound: "medium", startLap: 46, endLap: 78 },
+    ],
+  },
+  {
+    driver: "HAM",
+    stints: [
+      { compound: "medium", startLap: 1, endLap: 25 },
+      { compound: "hard", startLap: 26, endLap: 55 },
+      { compound: "soft", startLap: 56, endLap: 78 },
+    ],
+  },
+  {
+    driver: "LEC",
+    stints: [
+      { compound: "soft", startLap: 1, endLap: 15 },
+      { compound: "medium", startLap: 16, endLap: 40 },
+      { compound: "hard", startLap: 41, endLap: 78 },
+    ],
+  },
+  {
+    driver: "NOR",
+    stints: [
+      { compound: "medium", startLap: 1, endLap: 22 },
+      { compound: "medium", startLap: 23, endLap: 50 },
+      { compound: "soft", startLap: 51, endLap: 78 },
+    ],
+  },
+];
+
+const compoundColors: Record<string, string> = {
+  soft: "bg-f1-soft",
+  medium: "bg-f1-medium",
+  hard: "bg-f1-hard",
+};
+
+interface TyreStrategyProps {
+  highlighted?: boolean;
+}
+
+export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
+  const totalLaps = 78;
+  const currentLap = 42;
+
+  return (
+    <div
+      className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
+        highlighted
+          ? "border-chart-4 shadow-lg shadow-chart-4/20"
+          : "border-border"
+      }`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">
+            Tyre Strategy
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Compound usage timeline
+          </p>
+        </div>
+      </div>
+      <div className="space-y-3">
+        {strategies.map((driver) => (
+          <div key={driver.driver} className="flex items-center gap-3">
+            <span className="text-xs font-mono font-medium text-muted-foreground w-8">
+              {driver.driver}
+            </span>
+            <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden flex relative">
+              {driver.stints.map((stint, idx) => {
+                const width =
+                  ((stint.endLap - stint.startLap + 1) / totalLaps) * 100;
+                const left = ((stint.startLap - 1) / totalLaps) * 100;
+                return (
+                  <div
+                    key={`${stint.compound}-${stint.startLap}`}
+                    className={`absolute h-full ${compoundColors[stint.compound]} transition-all`}
+                    style={{
+                      width: `${width}%`,
+                      left: `${left}%`,
+                      opacity: stint.endLap <= currentLap ? 1 : 0.5,
+                    }}
+                  />
+                );
+              })}
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-foreground z-10"
+                style={{ left: `${(currentLap / totalLaps) * 100}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between mt-3 text-xs text-muted-foreground">
+        <span>Lap 1</span>
+        <span className="text-foreground font-medium">Lap {currentLap}</span>
+        <span>Lap {totalLaps}</span>
+      </div>
+    </div>
+  );
+}
