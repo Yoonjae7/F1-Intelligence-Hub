@@ -32,14 +32,18 @@ export default function F1IntelligenceHub() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Hide loading screen only when BOTH: min time elapsed AND data loaded (or failed)
+  // Hide loading screen only when BOTH conditions are met:
+  // 1. Minimum 7.77 seconds has elapsed
+  // 2. API call has completed (loading === false)
   useEffect(() => {
-    const dataReady = !loading || liveData || error;
-    
-    if (minTimeElapsed && dataReady) {
+    // Only proceed when min time has passed AND loading is complete
+    if (minTimeElapsed && !loading) {
       if (error && !liveData) {
+        // API call failed and no data
         setLoadFailed(true);
       }
+      // Either we have data, or we failed - either way, hide loading screen
+      // (demoData will be used as fallback if liveData is null)
       setInitialLoad(false);
     }
   }, [minTimeElapsed, loading, liveData, error]);
