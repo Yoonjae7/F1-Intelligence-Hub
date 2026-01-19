@@ -18,20 +18,31 @@ export default function F1IntelligenceHub() {
   const [highlightedChart, setHighlightedChart] = useState<string | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const { data: liveData, loading, error, isLive } = useF1Data({ refreshInterval: 10000 });
   
   const data = liveData || demoData;
 
-  // Hide loading screen after initial data fetch + 7.77 second buffer
+  // Minimum 7.77 seconds timer
   useEffect(() => {
-    if (!loading || liveData || error) {
-      // 7.77 second buffer - lucky number! 🍀
-      const timer = setTimeout(() => {
-        setInitialLoad(false);
-      }, 7770);
-      return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 7770);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Hide loading screen only when BOTH: min time elapsed AND data loaded (or failed)
+  useEffect(() => {
+    const dataReady = !loading || liveData || error;
+    
+    if (minTimeElapsed && dataReady) {
+      if (error && !liveData) {
+        setLoadFailed(true);
+      }
+      setInitialLoad(false);
     }
-  }, [loading, liveData, error]);
+  }, [minTimeElapsed, loading, liveData, error]);
 
   useEffect(() => {
     if (highlightedChart) {
@@ -42,9 +53,14 @@ export default function F1IntelligenceHub() {
     }
   }, [highlightedChart]);
 
-  // Show loading screen on initial load
-  if (initialLoad && loading) {
-    return <LoadingScreen />;
+  // Show loading screen during initial load
+  if (initialLoad) {
+    return (
+      <LoadingScreen 
+        failed={loadFailed} 
+        onRetry={() => window.location.reload()} 
+      />
+    );
   }
 
   return (
