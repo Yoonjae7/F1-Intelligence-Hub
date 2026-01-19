@@ -149,10 +149,18 @@ export function CircuitVisualization({ highlighted, drivers: liveDrivers, sessio
             </CardTitle>
             <p className="text-[10px] sm:text-xs text-white/40 mt-0.5 truncate">{circuitName} • Track Position</p>
           </div>
-          <span className="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] sm:text-xs text-emerald-400 font-medium">LIVE</span>
-          </span>
+          {session?.date ? (
+            <span className="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
+              <span className="text-[10px] sm:text-xs text-blue-400 font-medium">
+                {new Date(session.date).getFullYear()}
+              </span>
+            </span>
+          ) : (
+            <span className="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[10px] sm:text-xs text-emerald-400 font-medium">LIVE</span>
+            </span>
+          )}
         </div>
       </CardHeader>
       

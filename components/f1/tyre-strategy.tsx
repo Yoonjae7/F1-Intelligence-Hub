@@ -11,37 +11,38 @@ interface DriverStrategy {
   stints: Stint[];
 }
 
+// 2024 Abu Dhabi GP tyre strategies (matching demo-data.ts)
 const strategies: DriverStrategy[] = [
   {
-    driver: "VER",
-    stints: [
-      { compound: "soft", startLap: 1, endLap: 18 },
-      { compound: "hard", startLap: 19, endLap: 45 },
-      { compound: "medium", startLap: 46, endLap: 78 },
-    ],
-  },
-  {
-    driver: "HAM",
-    stints: [
-      { compound: "medium", startLap: 1, endLap: 25 },
-      { compound: "hard", startLap: 26, endLap: 55 },
-      { compound: "soft", startLap: 56, endLap: 78 },
-    ],
-  },
-  {
-    driver: "LEC",
-    stints: [
-      { compound: "soft", startLap: 1, endLap: 15 },
-      { compound: "medium", startLap: 16, endLap: 40 },
-      { compound: "hard", startLap: 41, endLap: 78 },
-    ],
-  },
-  {
-    driver: "NOR",
+    driver: "NOR", // Winner
     stints: [
       { compound: "medium", startLap: 1, endLap: 22 },
-      { compound: "medium", startLap: 23, endLap: 50 },
-      { compound: "soft", startLap: 51, endLap: 78 },
+      { compound: "hard", startLap: 23, endLap: 44 },
+      { compound: "soft", startLap: 45, endLap: 58 },
+    ],
+  },
+  {
+    driver: "SAI", // P2
+    stints: [
+      { compound: "medium", startLap: 1, endLap: 20 },
+      { compound: "hard", startLap: 21, endLap: 42 },
+      { compound: "medium", startLap: 43, endLap: 58 },
+    ],
+  },
+  {
+    driver: "LEC", // P3
+    stints: [
+      { compound: "soft", startLap: 1, endLap: 15 },
+      { compound: "hard", startLap: 16, endLap: 40 },
+      { compound: "medium", startLap: 41, endLap: 58 },
+    ],
+  },
+  {
+    driver: "HAM", // P4
+    stints: [
+      { compound: "medium", startLap: 1, endLap: 25 },
+      { compound: "hard", startLap: 26, endLap: 50 },
+      { compound: "soft", startLap: 51, endLap: 58 },
     ],
   },
 ];
@@ -57,8 +58,8 @@ interface TyreStrategyProps {
 }
 
 export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
-  const totalLaps = 78;
-  const currentLap = 42;
+  const totalLaps = 58; // 2024 Abu Dhabi GP had 58 laps
+  const currentLap = 58; // Show completed race
 
   return (
     <div
@@ -75,7 +76,7 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
             Tyre Strategy
           </h3>
           <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
-            Compound usage
+            2024 Abu Dhabi GP
           </p>
         </div>
         {/* Legend - Compact */}
@@ -119,11 +120,6 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
                   />
                 );
               })}
-              {/* Current lap marker */}
-              <div
-                className="absolute top-0 bottom-0 w-0.5 bg-foreground z-10"
-                style={{ left: `${(currentLap / totalLaps) * 100}%` }}
-              />
             </div>
           </div>
         ))}
@@ -132,7 +128,7 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
       {/* Lap indicators */}
       <div className="flex justify-between mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground">
         <span>L1</span>
-        <span className="text-foreground font-medium">L{currentLap}</span>
+        <span className="text-foreground font-medium">Finished</span>
         <span>L{totalLaps}</span>
       </div>
     </div>

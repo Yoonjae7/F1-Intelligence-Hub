@@ -143,6 +143,7 @@ export default function F1IntelligenceHub() {
             onHighlightChart={setHighlightedChart}
             session={data.session}
             isLive={isLive}
+            dashboardData={data}
           />
         </aside>
 
@@ -177,6 +178,7 @@ export default function F1IntelligenceHub() {
                   }}
                   session={data.session}
                   isLive={isLive}
+                  dashboardData={data}
                 />
               </div>
             </div>

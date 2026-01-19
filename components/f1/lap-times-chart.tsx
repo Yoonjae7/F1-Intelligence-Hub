@@ -43,28 +43,38 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
   }));
   
   function getDriverColor(code: string): string {
-    // 19 clearly distinct colors for all drivers
+    // Team colors for 2024 season
     const colors: Record<string, string> = {
-      'VER': '#0066FF',  // Blue
-      'HAM': '#00AA00',  // Green
-      'LEC': '#FF0000',  // Red
-      'NOR': '#FF6600',  // Orange
-      'SAI': '#FFD700',  // Yellow
-      'PIA': '#FF1493',  // Pink
-      'RUS': '#00DDDD',  // Cyan
-      'PER': '#9933FF',  // Purple
-      'ALO': '#CCFF00',  // Lime
-      'STR': '#008080',  // Teal
-      'GAS': '#FF00AA',  // Magenta
-      'OCO': '#40E0D0',  // Turquoise
-      'HUL': '#FFB000',  // Gold
-      'TSU': '#DC143C',  // Crimson
-      'RIC': '#8B4513',  // Brown
-      'MAG': '#9966CC',  // Lavender
-      'ALB': '#000080',  // Navy
-      'SAR': '#FF7F50',  // Coral
-      'BOT': '#66FFAA',  // Mint
-      'ZHO': '#FF1493',  // Pink (alternate)
+      // McLaren - Papaya Orange
+      'NOR': '#FF8000',
+      'PIA': '#FF8000',
+      // Ferrari - Red
+      'LEC': '#E8002D',
+      'SAI': '#DC143C',
+      // Mercedes - Teal
+      'HAM': '#27F4D2',
+      'RUS': '#00DDDD',
+      // Red Bull - Blue
+      'VER': '#3671C6',
+      'PER': '#0066FF',
+      // Aston Martin - Green
+      'ALO': '#229971',
+      'STR': '#00AA00',
+      // Alpine - Pink
+      'GAS': '#FF87BC',
+      'OCO': '#FF1493',
+      // Williams - Blue
+      'ALB': '#64C4FF',
+      'SAR': '#00BFFF',
+      // RB - Navy
+      'TSU': '#6692FF',
+      'RIC': '#4169E1',
+      // Sauber - Green
+      'BOT': '#52E252',
+      'ZHO': '#CCFF00',
+      // Haas - Silver
+      'MAG': '#B6BABD',
+      'HUL': '#808080',
     };
     return colors[code] || '#FFFFFF';
   }

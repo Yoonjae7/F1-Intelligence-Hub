@@ -16,25 +16,57 @@ interface Message {
 
 const fixedDate = new Date('2024-01-01T00:00:00Z');
 
-interface Session {
-  name: string;
-  location: string;
-  country: string;
+interface DashboardData {
+  session?: {
+    name: string;
+    location: string;
+    country: string;
+    circuit?: string;
+    date?: string;
+    year?: number;
+    laps?: number;
+  };
+  drivers?: Array<{
+    number: number;
+    code: string;
+    name: string;
+    team: string;
+    position: number;
+    gap: string;
+    fastestLap?: string;
+  }>;
+  weather?: {
+    airTemp?: number;
+    trackTemp?: number;
+    humidity?: number;
+    windSpeed?: number;
+    rainfall?: boolean;
+  };
+  raceSummary?: {
+    winner: string;
+    winningTeam: string;
+    fastestLap?: { driver: string; time: string; lap: number };
+    polePosition: string;
+    driversChampion: string;
+    constructorsChampion: string;
+    keyEvents?: string[];
+  };
 }
 
 interface AIChatPanelProps {
   onHighlightChart: (chart: string | null) => void;
-  session?: Session;
+  session?: DashboardData['session'];
   isLive?: boolean;
+  dashboardData?: DashboardData;
 }
 
-export function AIChatPanel({ onHighlightChart, session, isLive = false }: AIChatPanelProps) {
-  const sessionName = session ? `${session.location} ${session.name}` : "Grand Prix";
-  const liveStatus = isLive ? "live" : "demo";
+export function AIChatPanel({ onHighlightChart, session, isLive = false, dashboardData }: AIChatPanelProps) {
+  const sessionYear = session?.year || (session?.date ? new Date(session.date).getFullYear() : 2024);
+  const sessionLocation = session?.location || "the circuit";
+  const dataType = isLive ? "live" : "historical";
   
   const getWelcomeMessage = (): string => {
-    const location = session?.location || "the circuit";
-    return `Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing ${liveStatus} data from ${location}.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!`;
+    return `Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst with access to the ${sessionYear} ${sessionLocation} Grand Prix data currently displayed on your dashboard.\n\nI can answer questions about:\n• Race results and driver positions\n• Lap times and performance\n• Tyre strategies\n• Weather conditions\n• Gap analysis\n\nAsk me anything about the data you're seeing!`;
   };
 
   const [messages, setMessages] = useState<Message[]>([
@@ -62,6 +94,7 @@ export function AIChatPanel({ onHighlightChart, session, isLive = false }: AICha
       setHasUpdatedWelcome(true);
     }
   }, [session, hasUpdatedWelcome]);
+
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -100,6 +133,14 @@ export function AIChatPanel({ onHighlightChart, session, isLive = false }: AICha
             role: msg.role,
             content: msg.content,
           })),
+          // Send dashboard data for AI context
+          dashboardData: {
+            session: dashboardData?.session || session,
+            drivers: dashboardData?.drivers,
+            weather: dashboardData?.weather,
+            raceSummary: dashboardData?.raceSummary,
+            isLive,
+          },
         }),
       });
 
@@ -138,7 +179,9 @@ export function AIChatPanel({ onHighlightChart, session, isLive = false }: AICha
       <div className="hidden lg:flex p-4 border-b border-border items-center gap-2">
         <Sparkles className="h-4 w-4 text-chart-1" />
         <h3 className="text-sm font-semibold text-foreground">Race Intelligence</h3>
-        <span className="text-xs text-muted-foreground ml-auto">AI Analyst</span>
+        <span className="text-xs text-muted-foreground ml-auto">
+          {isLive ? '🔴 Live' : `📊 ${sessionYear}`}
+        </span>
       </div>
 
       {/* Messages */}
@@ -198,7 +241,7 @@ export function AIChatPanel({ onHighlightChart, session, isLive = false }: AICha
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about race strategy..."
+            placeholder="Ask about the race data..."
             className="flex-1 bg-muted/50 border border-border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <Button
@@ -211,7 +254,7 @@ export function AIChatPanel({ onHighlightChart, session, isLive = false }: AICha
           </Button>
         </div>
         <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 text-center">
-          AI responses are generated for demo purposes
+          AI has access to your dashboard data
         </p>
       </form>
     </div>

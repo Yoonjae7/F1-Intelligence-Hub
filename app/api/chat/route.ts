@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages } = await request.json();
+    const { messages, dashboardData } = await request.json();
 
     // Get Groq API key from environment
     const apiKey = process.env.GROQ_API_KEY;
@@ -14,6 +14,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build context about the dashboard data
+    let dataContext = '';
+    if (dashboardData) {
+      const { session, drivers, weather, isLive, raceSummary } = dashboardData;
+      
+      dataContext = `
+CURRENT DASHBOARD DATA:
+${isLive ? '🔴 LIVE SESSION' : '📊 HISTORICAL DATA'}
+
+Race: ${session?.year || 2024} ${session?.location || ''} ${session?.name || 'Grand Prix'}
+Circuit: ${session?.circuit || 'Unknown'}
+Date: ${session?.date || 'Unknown'}
+Laps: ${session?.laps || 58}
+
+RACE RESULTS (Current Standings):
+${drivers?.slice(0, 8).map((d: any) => 
+  `P${d.position}: ${d.name} (${d.team}) - ${d.gap}${d.fastestLap ? ` | Fastest: ${d.fastestLap}` : ''}`
+).join('\n') || 'No driver data available'}
+
+WEATHER CONDITIONS:
+- Air Temperature: ${weather?.airTemp || 'N/A'}°C
+- Track Temperature: ${weather?.trackTemp || 'N/A'}°C  
+- Humidity: ${weather?.humidity || 'N/A'}%
+- Wind Speed: ${weather?.windSpeed || 'N/A'} km/h
+- Conditions: ${weather?.rainfall ? 'Wet' : 'Dry'}
+
+${raceSummary ? `
+RACE SUMMARY:
+- Winner: ${raceSummary.winner} (${raceSummary.winningTeam})
+- Fastest Lap: ${raceSummary.fastestLap?.driver} - ${raceSummary.fastestLap?.time} (Lap ${raceSummary.fastestLap?.lap})
+- Pole Position: ${raceSummary.polePosition}
+- Drivers Champion: ${raceSummary.driversChampion}
+- Constructors Champion: ${raceSummary.constructorsChampion}
+
+KEY EVENTS:
+${raceSummary.keyEvents?.map((e: string) => `• ${e}`).join('\n') || 'None'}
+` : ''}
+
+IMPORTANT: Use ONLY the data above when answering questions about positions, lap times, gaps, weather, or race results. Do NOT make up any data. If asked about something not in the data, say you don't have that specific information.
+`;
+    }
+
     // Call Groq API
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -22,29 +64,31 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile', // Fast and accurate model
+        model: 'llama-3.3-70b-versatile',
         messages: [
           {
             role: 'system',
             content: `You are an F1 race analyst AI assistant for the F1 Intelligence Hub, created by Yoonae Lee. 
 
-When greeting users for the first time or when they say hello, introduce yourself warmly like: "Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! I'm your AI race analyst here to help you understand race data, strategies, and performance insights. Ask me anything about lap times, tyre strategies, driver performance, or race dynamics!"
+When greeting users for the first time or when they say hello, introduce yourself warmly and mention that you're analyzing the ${dashboardData?.session?.year || 2024} ${dashboardData?.session?.location || ''} Grand Prix data.
 
-You provide insightful analysis about Formula 1 races, driver performance, strategies, and race data. When analyzing race data, be specific and use numbers. 
+${dataContext}
+
+You provide accurate, data-driven analysis about Formula 1 races. ALWAYS refer to the actual dashboard data provided above - never make up statistics or results.
 
 You can reference charts by mentioning:
-- "lap times chart" (use chartRef: "laptimes")
-- "standings table" (use chartRef: "standings")
-- "gap chart" (use chartRef: "gap")
-- "tyre strategy" (use chartRef: "tyre")
-- "circuit visualization" (use chartRef: "circuit")
+- "lap times chart" (chartRef: "laptimes") - shows lap-by-lap performance
+- "standings table" (chartRef: "standings") - shows race positions
+- "gap chart" (chartRef: "gap") - shows time gaps between drivers
+- "tyre strategy" (chartRef: "tyre") - shows compound usage
+- "circuit visualization" (chartRef: "circuit") - shows track positions
 
-Keep responses concise and informative. Use bullet points for clarity.`
+Keep responses concise, accurate, and based ONLY on the provided data. Use bullet points for clarity.`
           },
           ...messages
         ],
-        temperature: 0.7,
-        max_tokens: 500,
+        temperature: 0.5, // Lower temperature for more accurate/consistent responses
+        max_tokens: 600,
       }),
     });
 
