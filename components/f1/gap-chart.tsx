@@ -43,9 +43,9 @@ export function GapChart({ highlighted = false, drivers }: GapChartProps) {
   const p1 = drivers?.find(d => d.position === 1);
   const p2 = drivers?.find(d => d.position === 2);
   
-  // Parse gap value (remove '+' and convert to number)
+  // Parse gap value (handle both string and number)
   const currentGap = p2?.gap && p2.gap !== 'LEADER' 
-    ? parseFloat(p2.gap.replace('+', '')) 
+    ? (typeof p2.gap === 'string' ? parseFloat(p2.gap.replace('+', '')) : parseFloat(p2.gap as any))
     : 2.345;
   return (
     <div
