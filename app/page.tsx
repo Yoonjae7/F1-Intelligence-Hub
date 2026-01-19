@@ -72,6 +72,7 @@ export default function F1IntelligenceHub() {
             <CircuitVisualization 
               highlighted={highlightedChart === "circuit"}
               drivers={data.drivers}
+              session={data.session}
             />
 
             {/* Charts Row 2 */}

@@ -34,7 +34,7 @@ export function Header({ isLive = false, session, loading = false }: HeaderProps
     return () => clearInterval(interval);
   }, []);
 
-  const sessionName = session ? `${session.location} ${session.name}` : "Monaco Grand Prix";
+  const sessionName = session ? `${session.location} ${session.name}` : "Grand Prix";
 
   return (
     <header className="flex items-center justify-between px-6 h-24 border-b border-border bg-background/80 backdrop-blur-sm overflow-visible">

@@ -17,15 +17,6 @@ interface Message {
 // Use a fixed date to avoid hydration mismatch
 const fixedDate = new Date('2024-01-01T00:00:00Z');
 
-const getInitialMessages = (): Message[] => [
-  {
-    id: "1",
-    role: "assistant",
-    content: "Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing demo data from Monaco.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!",
-    timestamp: fixedDate,
-  },
-];
-
 interface Session {
   name: string;
   location: string;
@@ -39,9 +30,40 @@ interface AIChatPanelProps {
 }
 
 export function AIChatPanel({ onHighlightChart, session, isLive = false }: AIChatPanelProps) {
-  const sessionName = session ? `${session.location} ${session.name}` : "Monaco";
-  const liveStatus = isLive ? "LIVE" : "demo";
-  const [messages, setMessages] = useState<Message[]>(getInitialMessages());
+  const sessionName = session ? `${session.location} ${session.name}` : "Grand Prix";
+  const liveStatus = isLive ? "live" : "demo";
+  
+  const getWelcomeMessage = (): string => {
+    const location = session?.location || "the circuit";
+    return `Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing ${liveStatus} data from ${location}.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!`;
+  };
+
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      role: "assistant",
+      content: getWelcomeMessage(),
+      timestamp: fixedDate,
+    },
+  ]);
+  
+  // Update welcome message when session data changes
+  const [hasUpdatedWelcome, setHasUpdatedWelcome] = useState(false);
+  
+  useEffect(() => {
+    if (session && !hasUpdatedWelcome) {
+      setMessages(prev => {
+        if (prev.length === 1 && prev[0].id === "1") {
+          return [{
+            ...prev[0],
+            content: getWelcomeMessage(),
+          }];
+        }
+        return prev;
+      });
+      setHasUpdatedWelcome(true);
+    }
+  }, [session, hasUpdatedWelcome]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
