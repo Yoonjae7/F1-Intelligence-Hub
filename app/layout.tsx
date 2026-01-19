@@ -9,22 +9,10 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'F1 Intelligence Hub',
-  description: 'AI-powered Formula 1 analytics platform - Real-time race intelligence and data insights',
-  generator: 'v0.app',
+  description: 'AI-powered Formula 1 analytics platform - Real-time race intelligence and data insights by Yoonae Lee',
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: '/apple-icon.png',
   },

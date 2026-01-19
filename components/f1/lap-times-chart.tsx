@@ -43,15 +43,35 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
   }));
   
   function getDriverColor(code: string): string {
+    // 19 clearly distinct colors for all drivers
     const colors: Record<string, string> = {
-      'VER': '#3b82f6', 'HAM': '#22c55e', 'LEC': '#ef4444', 'NOR': '#f97316',
-      'SAI': '#ef4444', 'PIA': '#f97316', 'RUS': '#22c55e', 'PER': '#3b82f6',
+      'VER': '#0066FF',  // Blue
+      'HAM': '#00AA00',  // Green
+      'LEC': '#FF0000',  // Red
+      'NOR': '#FF6600',  // Orange
+      'SAI': '#FFD700',  // Yellow
+      'PIA': '#FF1493',  // Pink
+      'RUS': '#00DDDD',  // Cyan
+      'PER': '#9933FF',  // Purple
+      'ALO': '#CCFF00',  // Lime
+      'STR': '#008080',  // Teal
+      'GAS': '#FF00AA',  // Magenta
+      'OCO': '#40E0D0',  // Turquoise
+      'HUL': '#FFB000',  // Gold
+      'TSU': '#DC143C',  // Crimson
+      'RIC': '#8B4513',  // Brown
+      'MAG': '#9966CC',  // Lavender
+      'ALB': '#000080',  // Navy
+      'SAR': '#FF7F50',  // Coral
+      'BOT': '#66FFAA',  // Mint
+      'ZHO': '#FF1493',  // Pink (alternate)
     };
-    return colors[code] || '#ffffff';
+    return colors[code] || '#FFFFFF';
   }
   
+  // Start with only top 4 drivers visible to reduce clutter
   const [activeDrivers, setActiveDrivers] = useState<string[]>(
-    drivers.map((d) => d.key)
+    drivers.slice(0, 4).map((d) => d.key)
   );
 
   const toggleDriver = (key: string) => {
@@ -68,34 +88,54 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
           : "border-border"
       }`}
     >
-      {/* Header - Stack on mobile */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4 relative z-10">
-        <div>
-          <h3 className="text-sm font-semibold text-foreground">Lap Times</h3>
-          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
-            Sector performance analysis
-          </p>
-        </div>
-        {/* Driver toggles - Scrollable on mobile */}
-        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
-          {drivers.map((driver) => (
+      {/* Header */}
+      <div className="mb-3 sm:mb-4 relative z-10">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">Lap Times</h3>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
+              Tap to toggle • {activeDrivers.length} of {drivers.length} visible
+            </p>
+          </div>
+          {/* Show All / Hide All buttons */}
+          <div className="flex gap-1">
             <button
-              key={driver.key}
               type="button"
-              onClick={() => toggleDriver(driver.key)}
-              className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded text-[10px] sm:text-xs transition-all active:scale-95 ${
-                activeDrivers.includes(driver.key)
-                  ? "bg-secondary text-foreground"
-                  : "bg-muted/50 text-muted-foreground"
-              }`}
+              onClick={() => setActiveDrivers(drivers.map(d => d.key))}
+              className="text-[9px] sm:text-[10px] px-2 py-1 rounded bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <span
-                className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: driver.color }}
-              />
-              {driver.key}
+              All
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={() => setActiveDrivers([])}
+              className="text-[9px] sm:text-[10px] px-2 py-1 rounded bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              None
+            </button>
+          </div>
+        </div>
+        
+        {/* Driver toggles - Wrap to show all */}
+        <div className="flex flex-wrap gap-1 sm:gap-1.5">
+          {drivers.map((driver) => {
+            const isActive = activeDrivers.includes(driver.key);
+            return (
+              <button
+                key={driver.key}
+                type="button"
+                onClick={() => toggleDriver(driver.key)}
+                className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[11px] font-bold transition-all active:scale-95 ${
+                  isActive
+                    ? "text-white"
+                    : "bg-muted/30 text-muted-foreground opacity-50 hover:opacity-100"
+                }`}
+                style={isActive ? { backgroundColor: driver.color } : undefined}
+              >
+                {driver.key}
+              </button>
+            );
+          })}
         </div>
       </div>
       
@@ -144,9 +184,10 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
                     type="monotone"
                     dataKey={driver.key}
                     stroke={driver.color}
-                    strokeWidth={2}
+                    strokeWidth={3}
                     dot={false}
-                    activeDot={{ r: 4 }}
+                    activeDot={{ r: 5, strokeWidth: 2, stroke: driver.color }}
+                    opacity={0.9}
                   />
                 )
             )}

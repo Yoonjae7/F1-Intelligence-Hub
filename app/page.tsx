@@ -9,6 +9,7 @@ import { TyreStrategy } from "@/components/f1/tyre-strategy";
 import { StatCards } from "@/components/f1/stat-cards";
 import { AIChatPanel } from "@/components/f1/ai-chat-panel";
 import { CircuitVisualization } from "@/components/f1/circuit-visualization";
+import { LoadingScreen } from "@/components/f1/loading-screen";
 import { useF1Data } from "@/hooks/use-f1-data";
 import { demoData } from "@/lib/demo-data";
 import { MessageCircle, X } from "lucide-react";
@@ -16,9 +17,21 @@ import { MessageCircle, X } from "lucide-react";
 export default function F1IntelligenceHub() {
   const [highlightedChart, setHighlightedChart] = useState<string | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
   const { data: liveData, loading, error, isLive } = useF1Data({ refreshInterval: 10000 });
   
   const data = liveData || demoData;
+
+  // Hide loading screen after initial data fetch
+  useEffect(() => {
+    if (!loading || liveData || error) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setInitialLoad(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, liveData, error]);
 
   useEffect(() => {
     if (highlightedChart) {
@@ -28,6 +41,11 @@ export default function F1IntelligenceHub() {
       return () => clearTimeout(timer);
     }
   }, [highlightedChart]);
+
+  // Show loading screen on initial load
+  if (initialLoad && loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,13 +59,7 @@ export default function F1IntelligenceHub() {
         {/* Main Content Area */}
         <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto pb-20 lg:pb-6">
           <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
-            {/* Loading/Error State */}
-            {loading && !data && (
-              <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
-                Loading F1 data...
-              </div>
-            )}
-            
+            {/* Error State */}
             {error && (
               <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-destructive">
                 Unable to load live data. Showing demo data.
