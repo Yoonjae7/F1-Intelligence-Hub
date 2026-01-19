@@ -24,34 +24,6 @@ const getInitialMessages = (): Message[] => [
     content: "Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing demo data from Monaco.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!",
     timestamp: fixedDate,
   },
-  {
-    id: "2",
-    role: "user",
-    content: "What's the current gap trend between VER and HAM?",
-    timestamp: fixedDate,
-  },
-  {
-    id: "3",
-    role: "assistant",
-    content:
-      "Analyzing gap trajectory between Verstappen and Hamilton:\n\n• Current gap: +2.345s\n• Trend: Verstappen extending lead\n• Rate: ~0.1s per lap\n\nBased on the gap chart, Hamilton closed briefly during laps 18-22 (pit window), but Verstappen has maintained consistent pace advantage since lap 30.\n\nProjection: Gap likely to stabilize around 3.5s by lap 60 if current pace differential holds.",
-    chartRef: "gap",
-    timestamp: fixedDate,
-  },
-  {
-    id: "4",
-    role: "user",
-    content: "How are the tyre strategies comparing?",
-    timestamp: fixedDate,
-  },
-  {
-    id: "5",
-    role: "assistant",
-    content:
-      "Comparing top 4 tyre strategies:\n\n**Verstappen (P1)**: Soft → Hard → Medium\nAggressive start, now on fresh mediums with good degradation curve.\n\n**Hamilton (P2)**: Medium → Hard → Soft\nConservative approach, soft stint at end could enable late charge.\n\n**Key insight**: Hamilton's final soft stint may provide pace advantage in final 15 laps. Watch for potential undercut opportunity around lap 55-58.",
-    chartRef: "tyre",
-    timestamp: fixedDate,
-  },
 ];
 
 interface Session {
