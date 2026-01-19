@@ -52,13 +52,13 @@ interface CircuitVisualizationProps {
 export function CircuitVisualization({ highlighted, drivers: liveDrivers }: CircuitVisualizationProps) {
   // Use live drivers if available, otherwise use default
   const displayDrivers = liveDrivers && liveDrivers.length > 0 
-    ? liveDrivers.slice(0, 6).map(d => ({
+    ? liveDrivers.slice(0, 6).map((d, idx) => ({
         id: d.number.toString(),
         code: d.code,
         team: d.team,
         color: d.color,
         position: d.position,
-        speed: 290 + Math.random() * 15, // Simulated speed
+        speed: 298 - (d.position * 2), // Speed decreases by position (no random)
         lapTime: 72 + d.position * 0.3,
         currentLap: 45,
       }))
