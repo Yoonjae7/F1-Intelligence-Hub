@@ -37,12 +37,12 @@ export function Header({ isLive = false, session, loading = false }: HeaderProps
   const sessionName = session ? `${session.location} ${session.name}` : "Monaco Grand Prix";
 
   return (
-    <header className="flex items-center justify-between px-6 h-40 border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="flex items-center gap-4">
+    <header className="flex items-center justify-between px-6 h-40 border-b border-border bg-background/80 backdrop-blur-sm overflow-visible">
+      <div className="flex items-center gap-4 overflow-visible">
         <img
           src="/images/logov1t.png"
           alt="F1 Intelligence Hub"
-          className="h-40 brightness-0 invert opacity-90"
+          className="h-40 brightness-0 invert opacity-90 scale-150 origin-left"
         />
       </div>
       <div className="flex items-center gap-6">
