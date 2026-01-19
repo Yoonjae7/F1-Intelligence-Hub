@@ -69,14 +69,14 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
           : "border-border"
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 relative z-10">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Lap Times</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Sector performance analysis
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {drivers.map((driver) => (
             <button
               key={driver.key}
