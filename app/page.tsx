@@ -32,39 +32,39 @@ export default function F1IntelligenceHub() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if data is actually usable (has required fields)
-  const dataIsReady = Boolean(
-    data && 
-    data.session && 
-    data.drivers && 
-    data.drivers.length > 0 &&
-    data.lapTimes &&
-    data.lapTimes.length > 0
-  );
-
   // Hide loading screen only when BOTH conditions are met:
   // 1. Minimum 7 seconds has elapsed
   // 2. Data is actually ready (has all required fields) OR loading failed
   useEffect(() => {
-    if (minTimeElapsed) {
-      if (dataIsReady) {
-        // Data is fully loaded and usable
+    if (!minTimeElapsed) return;
+
+    // Check if data is actually usable (has required fields)
+    const dataIsReady = Boolean(
+      data && 
+      data.session && 
+      data.drivers && 
+      data.drivers.length > 0 &&
+      data.lapTimes &&
+      data.lapTimes.length > 0
+    );
+
+    if (dataIsReady) {
+      // Data is fully loaded and usable
+      setInitialLoad(false);
+    } else if (!loading && error) {
+      // Loading finished but failed
+      setLoadFailed(true);
+      setInitialLoad(false);
+    } else if (!loading && !liveData) {
+      // Loading finished, no live data, but demo data should be available
+      // Give it a moment to ensure demo data is rendered
+      const timer = setTimeout(() => {
         setInitialLoad(false);
-      } else if (!loading && error) {
-        // Loading finished but failed
-        setLoadFailed(true);
-        setInitialLoad(false);
-      } else if (!loading && !liveData) {
-        // Loading finished, no live data, but demo data should be available
-        // Give it a moment to ensure demo data is rendered
-        const timer = setTimeout(() => {
-          setInitialLoad(false);
-        }, 500);
-        return () => clearTimeout(timer);
-      }
-      // Otherwise keep showing loading screen
+      }, 500);
+      return () => clearTimeout(timer);
     }
-  }, [minTimeElapsed, loading, liveData, error, dataIsReady]);
+    // Otherwise keep showing loading screen
+  }, [minTimeElapsed, loading, liveData, error, data]);
 
   useEffect(() => {
     if (highlightedChart) {
