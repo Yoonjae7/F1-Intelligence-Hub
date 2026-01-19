@@ -69,10 +69,8 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
     return colors[code] || '#FFFFFF';
   }
   
-  // Start with only top 4 drivers visible to reduce clutter
-  const [activeDrivers, setActiveDrivers] = useState<string[]>(
-    drivers.slice(0, 4).map((d) => d.key)
-  );
+  // Always start with top 4 drivers visible (VER, HAM, LEC, NOR are most common)
+  const [activeDrivers, setActiveDrivers] = useState<string[]>(['VER', 'HAM', 'LEC', 'NOR']);
 
   const toggleDriver = (key: string) => {
     setActiveDrivers((prev) =>
