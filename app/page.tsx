@@ -32,21 +32,39 @@ export default function F1IntelligenceHub() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Check if data is actually usable (has required fields)
+  const dataIsReady = Boolean(
+    data && 
+    data.session && 
+    data.drivers && 
+    data.drivers.length > 0 &&
+    data.lapTimes &&
+    data.lapTimes.length > 0
+  );
+
   // Hide loading screen only when BOTH conditions are met:
-  // 1. Minimum 7.77 seconds has elapsed
-  // 2. API call has completed (loading === false)
+  // 1. Minimum 7 seconds has elapsed
+  // 2. Data is actually ready (has all required fields) OR loading failed
   useEffect(() => {
-    // Only proceed when min time has passed AND loading is complete
-    if (minTimeElapsed && !loading) {
-      if (error && !liveData) {
-        // API call failed and no data
+    if (minTimeElapsed) {
+      if (dataIsReady) {
+        // Data is fully loaded and usable
+        setInitialLoad(false);
+      } else if (!loading && error) {
+        // Loading finished but failed
         setLoadFailed(true);
+        setInitialLoad(false);
+      } else if (!loading && !liveData) {
+        // Loading finished, no live data, but demo data should be available
+        // Give it a moment to ensure demo data is rendered
+        const timer = setTimeout(() => {
+          setInitialLoad(false);
+        }, 500);
+        return () => clearTimeout(timer);
       }
-      // Either we have data, or we failed - either way, hide loading screen
-      // (demoData will be used as fallback if liveData is null)
-      setInitialLoad(false);
+      // Otherwise keep showing loading screen
     }
-  }, [minTimeElapsed, loading, liveData, error]);
+  }, [minTimeElapsed, loading, liveData, error, dataIsReady]);
 
   useEffect(() => {
     if (highlightedChart) {

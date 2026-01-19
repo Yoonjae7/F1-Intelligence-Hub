@@ -200,3 +200,41 @@
     }
   }
 }
+
+/* Loading screen animations */
+.loading-grid {
+  animation: gridScroll 20s linear infinite;
+}
+
+.loading-pulse {
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
+.loading-fill {
+  animation: fillUp 1.5s ease-in-out infinite;
+}
+
+.loading-slide {
+  animation: slideAcross 1.2s ease-in-out infinite;
+}
+
+@keyframes gridScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes fillUp {
+  0% { transform: translateY(100%); opacity: 0.3; }
+  50% { transform: translateY(0%); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0.3; }
+}
+
+@keyframes slideAcross {
+  0% { left: -33%; }
+  100% { left: 100%; }
+}

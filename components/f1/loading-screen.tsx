@@ -9,30 +9,37 @@ interface LoadingScreenProps {
 }
 
 export function LoadingScreen({ failed = false, onRetry }: LoadingScreenProps) {
-  const [dots, setDots] = useState("");
+  const [dots, setDots] = useState(".");
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure animations start after mount to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (failed) return;
     const interval = setInterval(() => {
-      setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
-    }, 500);
+      setDots((prev) => (prev.length >= 3 ? "." : prev + "."));
+    }, 400);
     return () => clearInterval(interval);
   }, [failed]);
 
   return (
-    <div className="fixed inset-0 bg-background z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-background z-50 flex items-center justify-center overflow-hidden">
       {/* Animated background grid */}
-      <div 
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-          animation: failed ? 'none' : 'gridScroll 20s linear infinite'
-        }}
-      />
+      {mounted && (
+        <div 
+          className="absolute inset-0 opacity-10 loading-grid"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+          }}
+        />
+      )}
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Logo - Extra large on all devices */}
@@ -40,7 +47,7 @@ export function LoadingScreen({ failed = false, onRetry }: LoadingScreenProps) {
           <img
             src="/images/logov1t.png"
             alt="F1 Intelligence Hub"
-            className={`h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 brightness-0 invert opacity-90 ${failed ? '' : 'animate-pulse'}`}
+            className={`h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 brightness-0 invert opacity-90 ${failed ? '' : 'loading-pulse'}`}
           />
         </div>
 
@@ -71,17 +78,10 @@ export function LoadingScreen({ failed = false, onRetry }: LoadingScreenProps) {
                 <div
                   key={i}
                   className="w-3 h-12 sm:w-4 sm:h-16 rounded-full bg-red-500/20 relative overflow-hidden"
-                  style={{
-                    animation: `lightUp 2s ease-in-out infinite`,
-                    animationDelay: `${i * 0.2}s`
-                  }}
                 >
                   <div 
-                    className="absolute inset-0 bg-gradient-to-t from-red-500 to-red-300"
-                    style={{
-                      animation: `fillUp 2s ease-in-out infinite`,
-                      animationDelay: `${i * 0.2}s`
-                    }}
+                    className="absolute inset-0 bg-gradient-to-t from-red-500 to-red-300 loading-fill"
+                    style={{ animationDelay: `${i * 0.2}s` }}
                   />
                 </div>
               ))}
@@ -95,7 +95,7 @@ export function LoadingScreen({ failed = false, onRetry }: LoadingScreenProps) {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                 </div>
                 <p className="text-foreground font-semibold text-base sm:text-lg">
-                  Retrieving F1 Data{dots}
+                  Retrieving F1 Data<span className="inline-block w-6 text-left">{dots}</span>
                 </p>
               </div>
               <p className="text-muted-foreground text-xs sm:text-sm">
@@ -105,57 +105,11 @@ export function LoadingScreen({ failed = false, onRetry }: LoadingScreenProps) {
 
             {/* Racing line animation */}
             <div className="w-64 sm:w-80 h-1 bg-muted/30 rounded-full overflow-hidden relative">
-              <div 
-                className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-primary to-transparent"
-                style={{
-                  animation: 'slide 1.5s ease-in-out infinite'
-                }}
-              />
+              <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-primary to-transparent loading-slide" />
             </div>
           </>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes gridScroll {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(40px);
-          }
-        }
-
-        @keyframes lightUp {
-          0%, 100% {
-            opacity: 0.2;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-
-        @keyframes fillUp {
-          0% {
-            transform: translateY(100%);
-          }
-          50% {
-            transform: translateY(0%);
-          }
-          100% {
-            transform: translateY(100%);
-          }
-        }
-
-        @keyframes slide {
-          0% {
-            left: -33.333%;
-          }
-          100% {
-            left: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 }
