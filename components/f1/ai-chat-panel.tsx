@@ -14,14 +14,15 @@ interface Message {
   timestamp: Date;
 }
 
-const initialMessages: Message[] = [
-  {
+  const getInitialMessage = () => ({
     id: "1",
-    role: "assistant",
-    content:
-      "Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing live data from Monaco Grand Prix.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!",
+    role: "assistant" as const,
+    content: `Hello! Welcome to the F1 Intelligence Hub by Yoonae Lee! 🏎️\n\nI'm your AI race analyst here to help you understand race data, strategies, and performance insights. Currently analyzing ${liveStatus} data from ${sessionName}.\n\nAsk me anything about lap times, tyre strategies, driver performance, or race dynamics!`,
     timestamp: new Date(),
-  },
+  });
+
+const initialMessages: Message[] = [
+  getInitialMessage(),
   {
     id: "2",
     role: "user",
@@ -52,11 +53,21 @@ const initialMessages: Message[] = [
   },
 ];
 
-interface AIChatPanelProps {
-  onHighlightChart: (chart: string | null) => void;
+interface Session {
+  name: string;
+  location: string;
+  country: string;
 }
 
-export function AIChatPanel({ onHighlightChart }: AIChatPanelProps) {
+interface AIChatPanelProps {
+  onHighlightChart: (chart: string | null) => void;
+  session?: Session;
+  isLive?: boolean;
+}
+
+export function AIChatPanel({ onHighlightChart, session, isLive = false }: AIChatPanelProps) {
+  const sessionName = session ? `${session.location} ${session.name}` : "Monaco";
+  const liveStatus = isLive ? "LIVE" : "demo";
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);

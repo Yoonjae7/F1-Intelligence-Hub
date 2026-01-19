@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const gapData = [
+const defaultGapData = [
   { lap: 1, gap: 0 },
   { lap: 5, gap: 0.8 },
   { lap: 10, gap: 1.5 },
@@ -23,11 +23,30 @@ const gapData = [
   { lap: 42, gap: 2.345 },
 ];
 
-interface GapChartProps {
-  highlighted?: boolean;
+interface Driver {
+  number: number;
+  code: string;
+  name: string;
+  position: number;
+  gap: string;
 }
 
-export function GapChart({ highlighted = false }: GapChartProps) {
+interface GapChartProps {
+  highlighted?: boolean;
+  drivers?: Driver[];
+}
+
+export function GapChart({ highlighted = false, drivers }: GapChartProps) {
+  const gapData = defaultGapData;
+  
+  // Get P1 and P2 drivers
+  const p1 = drivers?.find(d => d.position === 1);
+  const p2 = drivers?.find(d => d.position === 2);
+  
+  // Parse gap value (remove '+' and convert to number)
+  const currentGap = p2?.gap && p2.gap !== 'LEADER' 
+    ? parseFloat(p2.gap.replace('+', '')) 
+    : 2.345;
   return (
     <div
       className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
@@ -42,12 +61,12 @@ export function GapChart({ highlighted = false }: GapChartProps) {
             Gap to Leader
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            HAM vs VER interval
+            {p2?.code || 'HAM'} vs {p1?.code || 'VER'} interval
           </p>
         </div>
         <div className="text-right">
           <span className="text-xl font-mono font-bold text-foreground">
-            +2.345
+            +{currentGap.toFixed(3)}
           </span>
           <span className="text-xs text-muted-foreground ml-1">sec</span>
         </div>

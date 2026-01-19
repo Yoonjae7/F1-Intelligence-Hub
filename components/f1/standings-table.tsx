@@ -2,92 +2,40 @@
 
 import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 
-const standings = [
-  {
-    pos: 1,
-    driver: "M. Verstappen",
-    team: "Red Bull Racing",
-    time: "1:23:45.678",
-    gap: "LEADER",
-    tyre: "hard",
-    change: 0,
-  },
-  {
-    pos: 2,
-    driver: "L. Hamilton",
-    team: "Mercedes",
-    time: "+2.345",
-    gap: "+2.345",
-    tyre: "medium",
-    change: 1,
-  },
-  {
-    pos: 3,
-    driver: "C. Leclerc",
-    team: "Ferrari",
-    time: "+5.678",
-    gap: "+3.333",
-    tyre: "soft",
-    change: -1,
-  },
-  {
-    pos: 4,
-    driver: "L. Norris",
-    team: "McLaren",
-    time: "+8.901",
-    gap: "+3.223",
-    tyre: "medium",
-    change: 2,
-  },
-  {
-    pos: 5,
-    driver: "C. Sainz",
-    team: "Ferrari",
-    time: "+12.345",
-    gap: "+3.444",
-    tyre: "hard",
-    change: 0,
-  },
-  {
-    pos: 6,
-    driver: "O. Piastri",
-    team: "McLaren",
-    time: "+15.678",
-    gap: "+3.333",
-    tyre: "medium",
-    change: -2,
-  },
-  {
-    pos: 7,
-    driver: "G. Russell",
-    team: "Mercedes",
-    time: "+18.901",
-    gap: "+3.223",
-    tyre: "soft",
-    change: 1,
-  },
-  {
-    pos: 8,
-    driver: "S. Perez",
-    team: "Red Bull Racing",
-    time: "+22.345",
-    gap: "+3.444",
-    tyre: "hard",
-    change: -1,
-  },
-];
-
 const tyreColors: Record<string, string> = {
   soft: "bg-f1-soft",
   medium: "bg-f1-medium",
   hard: "bg-f1-hard",
 };
 
-interface StandingsTableProps {
-  highlighted?: boolean;
+interface Driver {
+  number: number;
+  code: string;
+  name: string;
+  team: string;
+  position: number;
+  gap: string;
+  intervalToNext: number | null;
 }
 
-export function StandingsTable({ highlighted = false }: StandingsTableProps) {
+interface StandingsTableProps {
+  highlighted?: boolean;
+  drivers?: Driver[];
+}
+
+const defaultDrivers = [
+  { number: 1, code: "VER", name: "M. Verstappen", team: "Red Bull Racing", position: 1, gap: "LEADER", intervalToNext: null },
+  { number: 44, code: "HAM", name: "L. Hamilton", team: "Mercedes", position: 2, gap: "+2.345", intervalToNext: 2.345 },
+  { number: 16, code: "LEC", name: "C. Leclerc", team: "Ferrari", position: 3, gap: "+5.678", intervalToNext: 3.333 },
+  { number: 4, code: "NOR", name: "L. Norris", team: "McLaren", position: 4, gap: "+8.901", intervalToNext: 3.223 },
+  { number: 55, code: "SAI", name: "C. Sainz", team: "Ferrari", position: 5, gap: "+12.345", intervalToNext: 3.444 },
+  { number: 81, code: "PIA", name: "O. Piastri", team: "McLaren", position: 6, gap: "+15.678", intervalToNext: 3.333 },
+  { number: 63, code: "RUS", name: "G. Russell", team: "Mercedes", position: 7, gap: "+18.901", intervalToNext: 3.223 },
+  { number: 11, code: "PER", name: "S. Perez", team: "Red Bull Racing", position: 8, gap: "+22.345", intervalToNext: 3.444 },
+];
+
+export function StandingsTable({ highlighted = false, drivers = defaultDrivers }: StandingsTableProps) {
+  const standings = drivers.slice(0, 8); // Show top 8
   return (
     <div
       className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
@@ -135,16 +83,16 @@ export function StandingsTable({ highlighted = false }: StandingsTableProps) {
           <tbody>
             {standings.map((driver, idx) => (
               <tr
-                key={driver.driver}
+                key={driver.code}
                 className={`text-sm border-b border-border/50 transition-colors hover:bg-secondary/30 ${
                   idx === 0 ? "bg-secondary/20" : ""
                 }`}
               >
                 <td className="py-2.5 font-mono font-bold text-foreground">
-                  {driver.pos}
+                  {driver.position}
                 </td>
                 <td className="py-2.5 font-medium text-foreground">
-                  {driver.driver}
+                  {driver.name}
                 </td>
                 <td className="py-2.5 text-muted-foreground hidden sm:table-cell">
                   {driver.team}
@@ -154,22 +102,12 @@ export function StandingsTable({ highlighted = false }: StandingsTableProps) {
                 </td>
                 <td className="py-2.5">
                   <div className="flex justify-center">
-                    <span
-                      className={`w-4 h-4 rounded-full ${tyreColors[driver.tyre]}`}
-                    />
+                    <span className="w-4 h-4 rounded-full bg-f1-medium" />
                   </div>
                 </td>
                 <td className="py-2.5">
                   <div className="flex justify-center">
-                    {driver.change > 0 && (
-                      <ArrowUp className="h-3 w-3 text-emerald-500" />
-                    )}
-                    {driver.change < 0 && (
-                      <ArrowDown className="h-3 w-3 text-red-500" />
-                    )}
-                    {driver.change === 0 && (
-                      <Minus className="h-3 w-3 text-muted-foreground" />
-                    )}
+                    <Minus className="h-3 w-3 text-muted-foreground" />
                   </div>
                 </td>
               </tr>

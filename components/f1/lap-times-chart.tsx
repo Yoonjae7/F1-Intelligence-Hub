@@ -12,7 +12,7 @@ import {
   Legend,
 } from "recharts";
 
-const lapData = [
+const defaultLapData = [
   { lap: 1, VER: 78.2, HAM: 78.5, LEC: 78.8, NOR: 79.1 },
   { lap: 2, VER: 77.8, HAM: 77.9, LEC: 78.1, NOR: 78.3 },
   { lap: 3, VER: 77.5, HAM: 77.7, LEC: 77.9, NOR: 78.0 },
@@ -27,18 +27,30 @@ const lapData = [
   { lap: 12, VER: 76.5, HAM: 76.7, LEC: 76.9, NOR: 77.1 },
 ];
 
-const drivers = [
-  { key: "VER", name: "Verstappen", color: "#3b82f6" },
-  { key: "HAM", name: "Hamilton", color: "#22c55e" },
-  { key: "LEC", name: "Leclerc", color: "#ef4444" },
-  { key: "NOR", name: "Norris", color: "#f97316" },
-];
-
 interface LapTimesChartProps {
   highlighted?: boolean;
+  lapData?: any[];
 }
 
-export function LapTimesChart({ highlighted = false }: LapTimesChartProps) {
+export function LapTimesChart({ highlighted = false, lapData = defaultLapData }: LapTimesChartProps) {
+  // Extract driver codes from lap data
+  const driverKeys = lapData.length > 0 
+    ? Object.keys(lapData[0]).filter(key => key !== 'lap')
+    : ['VER', 'HAM', 'LEC', 'NOR'];
+  
+  const drivers = driverKeys.map(key => ({
+    key,
+    name: key,
+    color: getDriverColor(key)
+  }));
+  
+  function getDriverColor(code: string): string {
+    const colors: Record<string, string> = {
+      'VER': '#3b82f6', 'HAM': '#22c55e', 'LEC': '#ef4444', 'NOR': '#f97316',
+      'SAI': '#ef4444', 'PIA': '#f97316', 'RUS': '#22c55e', 'PER': '#3b82f6',
+    };
+    return colors[code] || '#ffffff';
+  }
   const [activeDrivers, setActiveDrivers] = useState<string[]>(
     drivers.map((d) => d.key)
   );

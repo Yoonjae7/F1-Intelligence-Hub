@@ -35,11 +35,34 @@ function getPointOnPath(progress: number, pathElement: SVGPathElement | null): {
   return { x: point.x, y: point.y };
 }
 
-interface CircuitVisualizationProps {
-  highlighted?: boolean;
+interface LiveDriver {
+  number: number;
+  code: string;
+  name: string;
+  team: string;
+  color: string;
+  position: number;
 }
 
-export function CircuitVisualization({ highlighted }: CircuitVisualizationProps) {
+interface CircuitVisualizationProps {
+  highlighted?: boolean;
+  drivers?: LiveDriver[];
+}
+
+export function CircuitVisualization({ highlighted, drivers: liveDrivers }: CircuitVisualizationProps) {
+  // Use live drivers if available, otherwise use default
+  const displayDrivers = liveDrivers && liveDrivers.length > 0 
+    ? liveDrivers.slice(0, 6).map(d => ({
+        id: d.number.toString(),
+        code: d.code,
+        team: d.team,
+        color: d.color,
+        position: d.position,
+        speed: 290 + Math.random() * 15, // Simulated speed
+        lapTime: 72 + d.position * 0.3,
+        currentLap: 45,
+      }))
+    : drivers;
   const [pathElement, setPathElement] = useState<SVGPathElement | null>(null);
   const [driverPositions, setDriverPositions] = useState<{ [key: string]: number }>({});
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
@@ -167,7 +190,7 @@ export function CircuitVisualization({ highlighted }: CircuitVisualizationProps)
             )}
 
             {/* Drivers */}
-            {drivers.map((driver) => {
+            {displayDrivers.map((driver) => {
               const pos = getPointOnPath(driverPositions[driver.id] || 0, pathElement);
               const isSelected = selectedDriver === driver.id;
               return (
@@ -244,7 +267,7 @@ export function CircuitVisualization({ highlighted }: CircuitVisualizationProps)
 
         {/* Driver Legend */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {drivers.map((driver) => (
+          {displayDrivers.map((driver) => (
             <button
               key={driver.id}
               onClick={() => setSelectedDriver(selectedDriver === driver.id ? null : driver.id)}
