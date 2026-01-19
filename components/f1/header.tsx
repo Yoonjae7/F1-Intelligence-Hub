@@ -44,7 +44,7 @@ export function Header({ isLive = false, session, loading = false }: HeaderProps
         <img
           src="/images/logov1t.png"
           alt="F1 Intelligence Hub"
-          className="h-12 sm:h-16 md:h-20 brightness-0 invert opacity-90 scale-[2] sm:scale-[2] md:scale-[2.5] origin-left"
+          className="h-14 sm:h-16 md:h-20 brightness-0 invert opacity-90 scale-[2.8] sm:scale-[2.5] md:scale-[2.5] origin-left"
         />
       </div>
 
