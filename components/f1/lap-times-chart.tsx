@@ -9,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 
 const defaultLapData = [
@@ -33,7 +32,6 @@ interface LapTimesChartProps {
 }
 
 export function LapTimesChart({ highlighted = false, lapData = defaultLapData }: LapTimesChartProps) {
-  // Extract driver codes from lap data
   const driverKeys = lapData.length > 0 
     ? Object.keys(lapData[0]).filter(key => key !== 'lap')
     : ['VER', 'HAM', 'LEC', 'NOR'];
@@ -51,6 +49,7 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
     };
     return colors[code] || '#ffffff';
   }
+  
   const [activeDrivers, setActiveDrivers] = useState<string[]>(
     drivers.map((d) => d.key)
   );
@@ -63,33 +62,35 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
 
   return (
     <div
-      className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
+      className={`bg-card rounded-xl p-3 sm:p-5 border transition-all duration-500 ${
         highlighted
           ? "border-chart-1 shadow-lg shadow-chart-1/20"
           : "border-border"
       }`}
     >
-      <div className="flex items-center justify-between mb-4 relative z-10">
+      {/* Header - Stack on mobile */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-3 sm:mb-4 relative z-10">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Lap Times</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
             Sector performance analysis
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        {/* Driver toggles - Scrollable on mobile */}
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
           {drivers.map((driver) => (
             <button
               key={driver.key}
               type="button"
               onClick={() => toggleDriver(driver.key)}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-all ${
+              className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded text-[10px] sm:text-xs transition-all active:scale-95 ${
                 activeDrivers.includes(driver.key)
                   ? "bg-secondary text-foreground"
                   : "bg-muted/50 text-muted-foreground"
               }`}
             >
               <span
-                className="w-2 h-2 rounded-full"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: driver.color }}
               />
               {driver.key}
@@ -97,9 +98,11 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
           ))}
         </div>
       </div>
-      <div className="h-64">
+      
+      {/* Chart - Smaller on mobile */}
+      <div className="h-48 sm:h-64 -mx-2 sm:mx-0">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={lapData}>
+          <LineChart data={lapData} margin={{ left: -10, right: 5 }}>
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="rgba(255,255,255,0.05)"
@@ -108,24 +111,27 @@ export function LapTimesChart({ highlighted = false, lapData = defaultLapData }:
             <XAxis
               dataKey="lap"
               stroke="rgba(255,255,255,0.3)"
-              fontSize={10}
+              fontSize={9}
               tickLine={false}
               axisLine={false}
+              interval="preserveStartEnd"
             />
             <YAxis
               domain={[76, 80]}
               stroke="rgba(255,255,255,0.3)"
-              fontSize={10}
+              fontSize={9}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}s`}
+              width={35}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "rgba(0,0,0,0.9)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "8px",
-                fontSize: "12px",
+                fontSize: "11px",
+                padding: "8px 12px",
               }}
               formatter={(value: number) => [`${value.toFixed(3)}s`]}
               labelFormatter={(label) => `Lap ${label}`}

@@ -62,29 +62,47 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
 
   return (
     <div
-      className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
+      className={`bg-card rounded-xl p-3 sm:p-5 border transition-all duration-500 ${
         highlighted
           ? "border-chart-4 shadow-lg shadow-chart-4/20"
           : "border-border"
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div>
           <h3 className="text-sm font-semibold text-foreground">
             Tyre Strategy
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Compound usage timeline
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
+            Compound usage
           </p>
         </div>
+        {/* Legend - Compact */}
+        <div className="flex items-center gap-2 text-[10px] sm:text-xs">
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-f1-soft" />
+            <span className="text-muted-foreground hidden xs:inline">Soft</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-f1-medium" />
+            <span className="text-muted-foreground hidden xs:inline">Med</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-f1-hard" />
+            <span className="text-muted-foreground hidden xs:inline">Hard</span>
+          </div>
+        </div>
       </div>
-      <div className="space-y-3">
+      
+      {/* Strategy timeline */}
+      <div className="space-y-2 sm:space-y-3">
         {strategies.map((driver) => (
-          <div key={driver.driver} className="flex items-center gap-3">
-            <span className="text-xs font-mono font-medium text-muted-foreground w-8">
+          <div key={driver.driver} className="flex items-center gap-2 sm:gap-3">
+            <span className="text-[10px] sm:text-xs font-mono font-medium text-muted-foreground w-7 sm:w-8 shrink-0">
               {driver.driver}
             </span>
-            <div className="flex-1 h-5 bg-muted/30 rounded-full overflow-hidden flex relative">
+            <div className="flex-1 h-4 sm:h-5 bg-muted/30 rounded-full overflow-hidden flex relative">
               {driver.stints.map((stint, idx) => {
                 const width =
                   ((stint.endLap - stint.startLap + 1) / totalLaps) * 100;
@@ -101,6 +119,7 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
                   />
                 );
               })}
+              {/* Current lap marker */}
               <div
                 className="absolute top-0 bottom-0 w-0.5 bg-foreground z-10"
                 style={{ left: `${(currentLap / totalLaps) * 100}%` }}
@@ -109,10 +128,12 @@ export function TyreStrategy({ highlighted = false }: TyreStrategyProps) {
           </div>
         ))}
       </div>
-      <div className="flex justify-between mt-3 text-xs text-muted-foreground">
-        <span>Lap 1</span>
-        <span className="text-foreground font-medium">Lap {currentLap}</span>
-        <span>Lap {totalLaps}</span>
+      
+      {/* Lap indicators */}
+      <div className="flex justify-between mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground">
+        <span>L1</span>
+        <span className="text-foreground font-medium">L{currentLap}</span>
+        <span>L{totalLaps}</span>
       </div>
     </div>
   );

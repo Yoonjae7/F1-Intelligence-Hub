@@ -22,46 +22,42 @@ export function StatCards({ weather }: StatCardsProps) {
       value: "1:14.265",
       subtext: "VER - Lap 38",
       icon: Timer,
-      trend: null,
     },
     {
       label: "Air Temp",
       value: weather?.airTemp ? `${weather.airTemp}°C` : "28°C",
-      subtext: weather?.humidity ? `${weather.humidity}% humidity` : "Dry conditions",
+      subtext: weather?.humidity ? `${weather.humidity}% humidity` : "Dry",
       icon: Gauge,
-      trend: null,
     },
     {
       label: "Track Temp",
       value: weather?.trackTemp ? `${weather.trackTemp}°C` : "48°C",
-      subtext: weather?.rainfall ? "Wet conditions" : "Dry conditions",
+      subtext: weather?.rainfall ? "Wet" : "Dry",
       icon: Thermometer,
-      trend: null,
     },
     {
-      label: "Wind Speed",
+      label: "Wind",
       value: weather?.windSpeed ? `${Math.round(weather.windSpeed)}` : "12",
       subtext: "km/h",
       icon: Wind,
-      trend: null,
     },
   ];
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-card rounded-xl p-4 border border-border hover:border-border/80 transition-all"
+          className="bg-card rounded-xl p-3 sm:p-4 border border-border hover:border-border/80 transition-all active:scale-[0.98]"
         >
-          <div className="flex items-start justify-between mb-2">
-            <stat.icon className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+            <stat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           </div>
           <div className="space-y-0.5">
-            <p className="text-xs text-muted-foreground">{stat.label}</p>
-            <p className="text-xl font-mono font-bold text-foreground">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">{stat.label}</p>
+            <p className="text-lg sm:text-xl font-mono font-bold text-foreground">
               {stat.value}
             </p>
-            <p className="text-xs text-muted-foreground">{stat.subtext}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">{stat.subtext}</p>
           </div>
         </div>
       ))}

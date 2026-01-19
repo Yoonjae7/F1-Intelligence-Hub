@@ -39,41 +39,43 @@ interface GapChartProps {
 export function GapChart({ highlighted = false, drivers }: GapChartProps) {
   const gapData = defaultGapData;
   
-  // Get P1 and P2 drivers
   const p1 = drivers?.find(d => d.position === 1);
   const p2 = drivers?.find(d => d.position === 2);
   
-  // Parse gap value (handle both string and number)
   const currentGap = p2?.gap && p2.gap !== 'LEADER' 
     ? (typeof p2.gap === 'string' ? parseFloat(p2.gap.replace('+', '')) : parseFloat(p2.gap as any))
     : 2.345;
+    
   return (
     <div
-      className={`bg-card rounded-xl p-5 border transition-all duration-500 ${
+      className={`bg-card rounded-xl p-3 sm:p-5 border transition-all duration-500 ${
         highlighted
           ? "border-chart-3 shadow-lg shadow-chart-3/20"
           : "border-border"
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div>
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-foreground">
             Gap to Leader
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {p2?.code || 'HAM'} vs {p1?.code || 'VER'} interval
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
+            {p2?.code || 'P2'} vs {p1?.code || 'P1'}
           </p>
         </div>
-        <div className="text-right">
-          <span className="text-xl font-mono font-bold text-foreground">
+        <div className="text-right shrink-0">
+          <span className="text-lg sm:text-xl font-mono font-bold text-foreground">
             +{currentGap.toFixed(3)}
           </span>
-          <span className="text-xs text-muted-foreground ml-1">sec</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground ml-1">s</span>
         </div>
       </div>
-      <div className="h-48">
+      
+      {/* Chart */}
+      <div className="h-40 sm:h-48 -mx-2 sm:mx-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={gapData}>
+          <AreaChart data={gapData} margin={{ left: -10, right: 5 }}>
             <defs>
               <linearGradient id="gapGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -88,23 +90,26 @@ export function GapChart({ highlighted = false, drivers }: GapChartProps) {
             <XAxis
               dataKey="lap"
               stroke="rgba(255,255,255,0.3)"
-              fontSize={10}
+              fontSize={9}
               tickLine={false}
               axisLine={false}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="rgba(255,255,255,0.3)"
-              fontSize={10}
+              fontSize={9}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}s`}
+              width={30}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: "rgba(0,0,0,0.9)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "8px",
-                fontSize: "12px",
+                fontSize: "11px",
+                padding: "8px 12px",
               }}
               formatter={(value: number) => [`+${value.toFixed(3)}s`, "Gap"]}
               labelFormatter={(label) => `Lap ${label}`}

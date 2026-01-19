@@ -11,12 +11,13 @@ import { AIChatPanel } from "@/components/f1/ai-chat-panel";
 import { CircuitVisualization } from "@/components/f1/circuit-visualization";
 import { useF1Data } from "@/hooks/use-f1-data";
 import { demoData } from "@/lib/demo-data";
+import { MessageCircle, X } from "lucide-react";
 
 export default function F1IntelligenceHub() {
   const [highlightedChart, setHighlightedChart] = useState<string | null>(null);
+  const [showMobileChat, setShowMobileChat] = useState(false);
   const { data: liveData, loading, error, isLive } = useF1Data({ refreshInterval: 10000 });
   
-  // Use live data if available, otherwise fall back to demo data
   const data = liveData || demoData;
 
   useEffect(() => {
@@ -36,28 +37,28 @@ export default function F1IntelligenceHub() {
         loading={loading}
       />
       
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-96px)]">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] md:h-[calc(100vh-96px)]">
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
-          <div className="max-w-6xl mx-auto space-y-4 lg:space-y-6">
+        <main className="flex-1 p-3 sm:p-4 lg:p-6 overflow-y-auto pb-20 lg:pb-6">
+          <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
             {/* Loading/Error State */}
             {loading && !data && (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
                 Loading F1 data...
               </div>
             )}
             
             {error && (
-              <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4 text-sm text-destructive">
-                Unable to load live data. Showing demo data. Error: {error}
+              <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-destructive">
+                Unable to load live data. Showing demo data.
               </div>
             )}
 
             {/* Quick Stats */}
             <StatCards weather={data.weather} />
 
-            {/* Charts Row 1 */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+            {/* Charts Row 1 - Stack on mobile */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
               <LapTimesChart 
                 highlighted={highlightedChart === "laptimes"} 
                 lapData={data.lapTimes}
@@ -75,8 +76,8 @@ export default function F1IntelligenceHub() {
               session={data.session}
             />
 
-            {/* Charts Row 2 */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
+            {/* Charts Row 2 - Stack on mobile */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
               <GapChart 
                 highlighted={highlightedChart === "gap"}
                 drivers={data.drivers}
@@ -86,14 +87,51 @@ export default function F1IntelligenceHub() {
           </div>
         </main>
 
-        {/* AI Chat Panel */}
-        <aside className="w-full lg:w-96 xl:w-[420px] border-t lg:border-t-0 lg:border-l border-border h-[400px] lg:h-auto">
+        {/* Desktop: AI Chat Panel in sidebar */}
+        <aside className="hidden lg:block w-96 xl:w-[420px] border-l border-border">
           <AIChatPanel 
             onHighlightChart={setHighlightedChart}
             session={data.session}
             isLive={isLive}
           />
         </aside>
+
+        {/* Mobile: Floating Chat Button */}
+        <button
+          onClick={() => setShowMobileChat(true)}
+          className="lg:hidden fixed bottom-4 right-4 z-40 w-14 h-14 bg-primary rounded-full shadow-lg shadow-primary/30 flex items-center justify-center text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+
+        {/* Mobile: Full-screen Chat Panel */}
+        {showMobileChat && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-background">
+            <div className="flex flex-col h-full">
+              {/* Mobile chat header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+                <span className="text-sm font-semibold">Race Intelligence AI</span>
+                <button 
+                  onClick={() => setShowMobileChat(false)}
+                  className="p-2 -mr-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              {/* Chat content */}
+              <div className="flex-1 min-h-0">
+                <AIChatPanel 
+                  onHighlightChart={(chart) => {
+                    setHighlightedChart(chart);
+                    setShowMobileChat(false);
+                  }}
+                  session={data.session}
+                  isLive={isLive}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
